@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/User");
+const WishlistItem = require("../models/WishlistItem");
+const logActivity = require("../utils/logActivity");
 const generateToken = require("../utils/generateToken");
 const { ROLES } = require("../utils/constants");
 
@@ -78,4 +80,36 @@ exports.login = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   res.json({ user: sanitizeUser(req.user) });
+};
+
+/**
+ * Self-service account deletion. Deliberately limited to the `user` role: staff
+ * and investor accounts are tied to records other people depend on, so those are
+ * removed by an admin through the users console instead.
+ */
+exports.deleteOwnAccount = async (req, res) => {
+  if (req.user.role !== ROLES.USER) {
+    return res.status(403).json({
+      message: "Only customer accounts can be deleted from the app. Contact an administrator.",
+    });
+  }
+
+  try {
+    // Remove the rows that only exist for this account before the account itself.
+    await WishlistItem.deleteMany({ user: req.user._id });
+    await User.findByIdAndDelete(req.user._id);
+
+    await logActivity({
+      user: req.user._id,
+      action: "deleted-own-account",
+      entityType: "User",
+      entityId: String(req.user._id),
+      metadata: { name: req.user.name, email: req.user.email, role: req.user.role },
+    });
+
+    res.json({ message: "Account deleted" });
+  } catch (error) {
+    console.error("Failed to delete account", error.message);
+    res.status(500).json({ message: "Failed to delete account" });
+  }
 };

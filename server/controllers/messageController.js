@@ -54,7 +54,7 @@ exports.updateMessageStatus = async (req, res) => {
       action: "updated-message",
       entityType: "Message",
       entityId: message._id,
-      metadata: { status: message.status },
+      metadata: { status: message.status, name: message.name, email: message.email },
     });
 
     res.json({ message });
@@ -76,6 +76,7 @@ exports.deleteMessage = async (req, res) => {
       action: "deleted-message",
       entityType: "Message",
       entityId: message._id,
+      metadata: { name: message.name, email: message.email },
     });
 
     res.json({ message: "Message deleted" });

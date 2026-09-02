@@ -41,7 +41,7 @@ exports.createUser = async (req, res) => {
       action: "created-user",
       entityType: "User",
       entityId: user._id,
-      metadata: { role: user.role },
+      metadata: { role: user.role, name: user.name, email: user.email },
     });
 
     res.status(201).json({ user: sanitize(user) });
@@ -73,7 +73,7 @@ exports.updateUser = async (req, res) => {
       action: "updated-user",
       entityType: "User",
       entityId: user._id,
-      metadata: { role: user.role },
+      metadata: { role: user.role, name: user.name, email: user.email },
     });
 
     res.json({ user: sanitize(user) });
@@ -95,7 +95,7 @@ exports.deleteUser = async (req, res) => {
       action: "deleted-user",
       entityType: "User",
       entityId: user._id,
-      metadata: { role: user.role },
+      metadata: { role: user.role, name: user.name, email: user.email },
     });
 
     res.json({ message: "User deleted" });

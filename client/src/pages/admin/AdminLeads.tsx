@@ -106,12 +106,26 @@ const AdminLeads = () => {
                 <div className="mt-2 space-y-1 text-sm text-white/60">
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4" />
-                    <span>{lead.email}</span>
+                    <a
+                      href={`mailto:${lead.email}`}
+                      className="underline-offset-2 hover:text-white hover:underline"
+                      aria-label={`Email ${lead.fullName}`}
+                    >
+                      {lead.email}
+                    </a>
                   </div>
                   {lead.phoneNumber && (
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      <span>{lead.phoneNumber}</span>
+                      {/* tel: hands off to the OS dialer — desktop browsers route
+                          it to the default calling app, phones dial directly. */}
+                      <a
+                        href={`tel:${lead.phoneNumber.replace(/[^\d+]/g, "")}`}
+                        className="underline-offset-2 hover:text-white hover:underline"
+                        aria-label={`Call ${lead.fullName}`}
+                      >
+                        {lead.phoneNumber}
+                      </a>
                     </div>
                   )}
                   {lead.interestedIn && (

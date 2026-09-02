@@ -4,6 +4,9 @@ const propertySchema = new mongoose.Schema(
   {
     title: { type: String, trim: true, default: "" },
     location: { type: String, default: "" },
+    // Map pin. Null when nobody has placed the property on the map yet.
+    latitude: { type: Number, default: null, min: -90, max: 90 },
+    longitude: { type: Number, default: null, min: -180, max: 180 },
     currencyCode: {
       type: String,
       enum: ["EGP", "SAR", "EUR", "AED", "RUB"],

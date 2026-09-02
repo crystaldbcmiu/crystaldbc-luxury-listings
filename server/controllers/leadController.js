@@ -53,7 +53,7 @@ exports.updateLead = async (req, res) => {
       action: "updated-lead",
       entityType: "Lead",
       entityId: lead._id,
-      metadata: { status: lead.status },
+      metadata: { status: lead.status, name: lead.fullName, email: lead.email },
     });
 
     res.json({ lead });
@@ -75,6 +75,7 @@ exports.deleteLead = async (req, res) => {
       action: "deleted-lead",
       entityType: "Lead",
       entityId: lead._id,
+      metadata: { name: lead.fullName, email: lead.email },
     });
 
     res.json({ message: "Lead deleted" });

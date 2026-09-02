@@ -40,6 +40,47 @@ const normalizeVirtualTourEmbedUrl = (rawValue) => {
   return `${parsedUrl.origin}${parsedUrl.pathname}${parsedUrl.search}`;
 };
 
+const COORDINATE_RANGES = { latitude: 90, longitude: 180 };
+
+/**
+ * Coordinates arrive as strings from the admin forms. Returns the parsed number,
+ * `null` for an intentionally cleared pin, `undefined` to leave the field alone,
+ * or the string "invalid" when the value can't be used.
+ */
+const normalizeCoordinate = (rawValue, field) => {
+  if (rawValue === undefined) {
+    return undefined;
+  }
+  if (rawValue === null || String(rawValue).trim() === "") {
+    return null;
+  }
+
+  const value = Number(rawValue);
+  if (!Number.isFinite(value) || Math.abs(value) > COORDINATE_RANGES[field]) {
+    return "invalid";
+  }
+  return value;
+};
+
+/**
+ * Validates latitude/longitude on the request body in place. Returns an error
+ * message when the payload is unusable, otherwise null.
+ */
+const applyCoordinates = (body) => {
+  for (const field of ["latitude", "longitude"]) {
+    const normalized = normalizeCoordinate(body[field], field);
+    if (normalized === "invalid") {
+      return `${field} must be a number between -${COORDINATE_RANGES[field]} and ${COORDINATE_RANGES[field]}`;
+    }
+    if (normalized === undefined) {
+      delete body[field];
+    } else {
+      body[field] = normalized;
+    }
+  }
+  return null;
+};
+
 const buildFilters = (query) => {
   const filters = {};
   if (query.search) {
@@ -76,6 +117,11 @@ const buildFilters = (query) => {
   }
   if (query.exclude) {
     filters._id = { $ne: query.exclude };
+  }
+  // The map only ever wants pinned properties.
+  if (query.hasCoordinates === "true") {
+    filters.latitude = { $ne: null };
+    filters.longitude = { $ne: null };
   }
   return filters;
 };
@@ -132,6 +178,11 @@ exports.createProperty = async (req, res) => {
       if (!allowedCurrencies.includes(req.body.currencyCode)) {
         return res.status(400).json({ message: "currencyCode must be one of EGP, SAR, EUR, AED, or RUB" });
       }
+    }
+
+    const coordinateError = applyCoordinates(req.body);
+    if (coordinateError) {
+      return res.status(400).json({ message: coordinateError });
     }
 
     if (req.body.virtualTourEmbedUrl !== undefined) {
@@ -195,6 +246,11 @@ exports.updateProperty = async (req, res) => {
       }
     }
 
+    const coordinateError = applyCoordinates(req.body);
+    if (coordinateError) {
+      return res.status(400).json({ message: coordinateError });
+    }
+
     if (req.body.virtualTourEmbedUrl !== undefined) {
       const normalizedEmbedUrl = normalizeVirtualTourEmbedUrl(req.body.virtualTourEmbedUrl);
       if (normalizedEmbedUrl === null) {
@@ -251,6 +307,10 @@ exports.updateProperty = async (req, res) => {
     res.status(500).json({ message: "Failed to update property" });
   }
 };
+
+// Exported so the root `npm run verify` can exercise coordinate validation
+// without touching the database.
+exports._applyCoordinates = applyCoordinates;
 
 exports.deleteProperty = async (req, res) => {
   try {

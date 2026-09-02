@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { MapPin, Bed, Bath, Square, ArrowLeft, Check, Phone, Mail, Heart, DollarSign } from "lucide-react";
+import { MapPin, Bed, Bath, Square, ArrowLeft, Phone, Mail, Heart, DollarSign } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { properties } from "@/data/properties";
@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from "react";
 import RegisterInterestDialog from "@/components/RegisterInterestDialog";
 import PropertyCard from "@/components/PropertyCard";
 import apiClient from "@/lib/apiClient";
+import { amenityIcon } from "@/lib/amenities";
 import type { Property as ApiProperty, SiteSettingsContent } from "@/types";
 import useProperties from "@/hooks/useProperties";
 import { getMediaUrl } from "@/lib/media";
@@ -430,14 +431,17 @@ const PropertyDetail = () => {
                 {t("propertyDetail.featuresTitle")}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {property.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Check className="h-4 w-4 text-accent" />
+                {property.features.map((feature, index) => {
+                  const Icon = amenityIcon(feature);
+                  return (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="h-4 w-4 text-accent" />
+                      </div>
+                      <span className="text-foreground">{feature}</span>
                     </div>
-                    <span className="text-foreground">{feature}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

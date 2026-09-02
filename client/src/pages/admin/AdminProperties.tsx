@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
+import { AMENITIES, splitAmenities } from "@/lib/amenities";
 import type { Property } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ const initialFormState = {
   gallery: "",
   description: "",
   features: "",
+  amenities: [] as string[],
   type: "",
   status: "For Sale",
   constructionStatus: "Finished Construction",
@@ -91,7 +93,10 @@ const AdminProperties = () => {
       const payload = {
         ...formState,
         gallery: formState.gallery.split(",").map((item) => item.trim()).filter(Boolean),
-        features: formState.features.split(",").map((item) => item.trim()).filter(Boolean),
+        features: [
+          ...formState.amenities,
+          ...formState.features.split(",").map((item) => item.trim()).filter(Boolean),
+        ],
       };
       if (editingId) {
         return apiClient.put(`/properties/${editingId}`, payload);
@@ -134,7 +139,8 @@ const AdminProperties = () => {
       coverImage: property.coverImage,
       gallery: property.gallery.join(", "),
       description: property.description,
-      features: property.features.join(", "),
+      amenities: splitAmenities(property.features).selected,
+      features: splitAmenities(property.features).custom.join(", "),
       type: property.type,
       status: property.status,
       constructionStatus: property.constructionStatus ?? "Finished Construction",
@@ -145,6 +151,14 @@ const AdminProperties = () => {
       isFeatured: property.isFeatured,
     });
   };
+
+  const toggleAmenity = (label: string) =>
+    setFormState((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(label)
+        ? prev.amenities.filter((item) => item !== label)
+        : [...prev.amenities, label],
+    }));
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -366,7 +380,39 @@ const AdminProperties = () => {
             <Textarea name="description" value={formState.description} onChange={handleChange} />
           </div>
           <div className="md:col-span-2">
-            <label className="text-sm font-medium">{t("admin.properties.labels.features")} <span className="text-white/40 text-xs font-normal">({t("admin.common.optional")})</span></label>
+            <label className="text-sm font-medium">{t("admin.properties.labels.amenities", "Amenities")}</label>
+            <p className="text-xs text-white/40">
+              {t("admin.properties.labels.amenitiesHint", "Select everything this property has.")}
+            </p>
+            {/* Stored as labels in `features`, so listings created before this
+                picker existed keep their values. */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              {AMENITIES.map(({ key, label, Icon }) => {
+                const checked = formState.amenities.includes(label);
+                return (
+                  <button
+                    type="button"
+                    key={key}
+                    role="checkbox"
+                    aria-checked={checked}
+                    onClick={() => toggleAmenity(label)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition ${
+                      checked
+                        ? "border-luxury-gold bg-luxury-gold/15 text-luxury-gold"
+                        : "border-white/10 bg-white/5 text-white/60 hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <label className="mt-3 text-sm font-medium">
+              {t("admin.properties.labels.features")}{" "}
+              <span className="text-white/40 text-xs font-normal">({t("admin.common.optional")})</span>
+            </label>
             <Textarea name="features" value={formState.features} onChange={handleChange} />
           </div>
           <div>

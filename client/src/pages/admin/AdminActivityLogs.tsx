@@ -3,11 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import AdminGlassCard from "@/components/admin/AdminGlassCard";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { ClipboardList, ShieldCheck, Search } from "lucide-react";
+import { ClipboardList, ShieldCheck, Search, PlusCircle, Pencil, Trash2, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { fetchActivityLogs } from "@/lib/activityLogs";
+import { describeActivity } from "@/lib/activityDescription";
 
 const formatDate = (value: string) => new Date(value).toLocaleString();
+
+/** Matches the tone the log descriptor assigns: additions green, removals red. */
+const TONE_ICONS = {
+  created: { Icon: PlusCircle, className: "text-emerald-400" },
+  updated: { Icon: Pencil, className: "text-luxury-gold" },
+  deleted: { Icon: Trash2, className: "text-red-400" },
+  other: { Icon: Zap, className: "text-white/50" },
+} as const;
 
 const AdminActivityLogs = () => {
   const { t } = useTranslation();
@@ -85,15 +94,22 @@ const AdminActivityLogs = () => {
                   </div>
                   <p className="text-sm text-white/40">{formatDate(log.createdAt)}</p>
                 </div>
-                <p className="text-white/90 font-medium">{log.action}</p>
-                <p className="text-sm text-white/50">
+                {(() => {
+                  const described = describeActivity(log, t);
+                  const { Icon, className } = TONE_ICONS[described.icon];
+                  return (
+                    <>
+                      <p className="text-white/90 font-medium flex items-center gap-2">
+                        <Icon className={`h-4 w-4 shrink-0 ${className}`} />
+                        <span>{described.summary}</span>
+                      </p>
+                      {described.detail && <p className="text-sm text-white/60">{described.detail}</p>}
+                    </>
+                  );
+                })()}
+                <p className="text-xs text-white/40">
                   {log.entityType ? `${log.entityType} • ${log.entityId ?? "—"}` : t("admin.activityLogs.general")}
                 </p>
-                {log.metadata && (
-                  <pre className="bg-black/30 rounded-lg p-3 text-xs text-white/60 overflow-x-auto border border-white/5">
-                    {JSON.stringify(log.metadata, null, 2)}
-                  </pre>
-                )}
               </div>
             ))}
           </div>
