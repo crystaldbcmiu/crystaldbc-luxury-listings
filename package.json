@@ -1,0 +1,22 @@
+{
+  "name": "crystaldbc-luxury-listings",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root launcher for the CrystalDBC API, web client, and mobile app.",
+  "scripts": {
+    "setup": "npm install && npm --prefix server install && npm --prefix client install && npm --prefix mobile install",
+    "dev": "node scripts/preflight.mjs && node scripts/launch-mobile.mjs && concurrently -k -n api,web -c blue,green \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:inline": "node scripts/preflight.mjs && concurrently -k -n api,web,mobile -c blue,green,magenta \"npm:dev:server\" \"npm:dev:web\" \"npm:dev:mobile\"",
+    "dev:api": "node scripts/preflight.mjs --skip-mobile && concurrently -k -n api,web -c blue,green \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:web": "npm --prefix client run dev",
+    "dev:mobile": "npm --prefix mobile run start",
+    "check": "node scripts/check.mjs",
+    "verify": "node scripts/verify.mjs",
+    "assets:brand": "node scripts/generate-brand-assets.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "sharp": "^0.35.4"
+  }
+}
