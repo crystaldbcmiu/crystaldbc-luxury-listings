@@ -1,0 +1,83 @@
+{
+  "expo": {
+    "name": "CrystalDBC",
+    "slug": "crystaldbc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "crystaldbc",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#131720",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.digitaltwin.crystaldbc",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "CrystalDBC needs access to your photos so you can upload property images.",
+        "NSCameraUsageDescription": "CrystalDBC needs access to your camera so you can capture property images.",
+        "NSLocationWhenInUseUsageDescription": "CrystalDBC uses your location to centre the property map on where you are.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.crystaldbc.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#131720",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "crystaldbc.com"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-localization",
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CrystalDBC needs access to your photos so you can upload property images."
+        }
+      ],
+      "expo-video"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
