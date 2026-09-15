@@ -1,0 +1,28 @@
+name: Build iOS, submit to App Store Connect
+
+# iOS ONLY — builds the iOS app and auto-submits it to App Store Connect (TestFlight).
+# No `on:` trigger — run manually from mobile/ with:
+#   eas workflow:run .eas/workflows/submit-ios.yml
+# Add an `on: push:` block later if you ever want it to run automatically.
+
+jobs:
+  # Build the iOS app in the production profile (autoIncrement + remote version
+  # source in eas.json give each build a fresh build number).
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  # Submit the iOS build produced above to App Store Connect.
+  # `needs` makes this wait for build_ios and reuse its artifact automatically.
+  # Credentials come from eas.json submit.production.ios (ascAppId + appleTeamId),
+  # so there is no interactive Apple login during the run.
+  submit_ios:
+    name: Submit iOS to App Store Connect
+    needs: [build_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production

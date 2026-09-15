@@ -12,25 +12,20 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#131720"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.crystaldbc.realstate",
+      "bundleIdentifier": "com.crystaldbc.app",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "CrystalDBC needs access to your photos so you can upload property images.",
         "NSCameraUsageDescription": "CrystalDBC needs access to your camera so you can capture property images.",
-        "NSLocationWhenInUseUsageDescription": "CrystalDBC uses your location to centre the property map on where you are.",
-        "ITSAppUsesNonExemptEncryption": false
+        "NSLocationWhenInUseUsageDescription": "CrystalDBC uses your location to centre the property map on where you are."
       }
     },
     "android": {
       "package": "com.crystaldbc.app",
-      "permissions": [
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.RECORD_AUDIO"
-      ],
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       "adaptiveIcon": {
         "backgroundColor": "#131720",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -41,16 +36,8 @@
         {
           "action": "VIEW",
           "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "crystaldbc.com"
-            }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "data": [{ "scheme": "https", "host": "crystaldbc.com" }],
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -69,8 +56,7 @@
         {
           "photosPermission": "CrystalDBC needs access to your photos so you can upload property images."
         }
-      ],
-      "expo-video"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -78,11 +64,7 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "0d749cc2-7582-4f92-9031-748ff8339b20"
       }
-    },
-    "owner": "crystaldbc"
+    }
   }
 }

@@ -1,0 +1,36 @@
+name: Submit latest iOS build to App Store Connect
+
+# SUBMIT ONLY — this workflow does NOT build anything.
+#
+# It finds the most recent finished iOS production/store build on EAS and
+# submits that to App Store Connect (TestFlight). Use it when the build you
+# want is already done and you just need to ship it.
+#
+# No `on:` trigger — run it manually from mobile/ with:
+#   eas workflow:run .eas/workflows/submit-latest-ios.yml
+#
+# Credentials come from eas.json -> submit.production.ios (ascAppId +
+# appleTeamId), so there is no interactive Apple login during the run.
+#
+# NOTE: Do NOT run `eas submit` in a custom `run:` step — EAS workflow
+# runners do not ship the `eas` binary on PATH (exit 127: command not found).
+# Use the pre-packaged get-build + submit jobs instead.
+
+jobs:
+  # Resolve the latest matching finished iOS build (no rebuild).
+  get_latest_ios:
+    name: Get latest iOS production build
+    type: get-build
+    params:
+      platform: ios
+      profile: production
+      distribution: store
+
+  # Submit that build to App Store Connect.
+  submit_latest_ios:
+    name: Submit latest iOS build
+    needs: [get_latest_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.get_latest_ios.outputs.build_id }}
+      profile: production

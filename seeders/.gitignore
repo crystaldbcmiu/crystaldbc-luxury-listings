@@ -1,0 +1,4 @@
+# Local, never committed: real credential sheets live outside git
+*.local.md
+*.local.json
+CREDENTIALS*
