@@ -1,0 +1,14 @@
+name: Build Android (app-bundle)
+
+# ANDROID ONLY — builds the production .aab. Not submitted anywhere — download
+# the artifact from the EAS build page and upload it to Play Console yourself.
+# No `on:` trigger — run manually from mobile/ with:
+#   eas workflow:run .eas/workflows/build-android.yml
+
+jobs:
+  build_android:
+    name: Build Android (app-bundle)
+    type: build
+    params:
+      platform: android
+      profile: production
